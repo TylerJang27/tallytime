@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tallytime"
+version = "0.0.1"
+authors = [
+  { name="Tyler Jang", email="tylerjang27@gmail.com" },
+]
+description = "A package for logging and timeboxing python projects"
+readme = "README.md"
+license = { file="LICENSE" }
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/TylerJang27/tallytime"
+"Bug Tracker" = "https://github.com/TylerJang27/tallytime/issues"
