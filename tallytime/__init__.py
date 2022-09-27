@@ -10,7 +10,9 @@ from tallytime.tally_log import (
 __all__ = ["tallytime", "set_settings", "set_logger", "get_sessions", "get_session", "get_sessions_by_name", "get_session_by_name", "register",
            "update", "update_by_name", "delete", "delete_by_name", "display", "display_and_delete", "display_by_name", "display_and_delete_by_name"]
 
-tallytime = TallyLog()
+_settings = TallyLogSettings()
+_settings.name = "tally_root"
+tallytime = TallyLog(settings=_settings)
 
 
 def set_settings(settings: TallyLogSettings) -> None:

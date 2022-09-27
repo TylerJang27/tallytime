@@ -4,7 +4,7 @@ A simple demo for working with tallytime using the root TallyLog
 Run with `python3 demo.py` from the repo root.
 """
 
-from tallytime import delete, register, update
+from tallytime import display_and_delete, register, update
 
 
 def run():
@@ -13,11 +13,9 @@ def run():
     # Adds an update log to the TallySession
     id = update(id)
     # Deletes the TallySession form the TallyLog, returning the removed object
-    # Deleting is not treated as an update event
+    # Deleting is not treated as its own update event
     # Use display_and_delete to output to a logger object
-    tally_session = delete(id)
-    # Print the returned TallySession
-    print(tally_session)
+    display_and_delete(id)
 
 
 if __name__ == "__main__":

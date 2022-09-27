@@ -59,3 +59,14 @@ _FATAL_TALLY_EXCEPTION_MSG = (
 class FatalTallyException(TallyException):
     def __init__(self):
         super().__init__(_FATAL_TALLY_EXCEPTION_MSG)
+
+
+_BAD_ENUM_TALLY_EXCEPTION_MSG = (
+    "A bad enum value of {} has been passed to {}. "
+    "Please check your function calls and try again."
+)
+
+
+class BadEnumTallyException(TallyException):
+    def __init__(self, val: str, enum_type: str):
+        super().__init__(_BAD_ENUM_TALLY_EXCEPTION_MSG.format(val, enum_type))

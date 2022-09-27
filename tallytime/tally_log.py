@@ -1,37 +1,51 @@
 from datetime import datetime, timedelta
+from logging import Logger  # trunk-ignore(flake8/TC003)
 from typing import Dict, List
 
 # TODO: VERIFY IMPORTS WORK AS PACKAGE
 from tallytime.exceptions import (
+    BadEnumTallyException,
     DuplicateNameTallyException,
     DuplicateTallyException,
     FatalTallyException,
     MissingTallyErrorException,
     MissingTallyWarnException,
 )
-from tallytime.settings import TallyLogSettings
+from tallytime.loggers import DefaultConsoleLogger
+from tallytime.settings import LogLevel, TallyLogSettings, _log_level_map
 from tallytime.tally_session import TallySession, _TallySessionId
 
-# TODO: ADD DEFAULT LOGGER ATTACHMENT
+
+def _log_message(logger: Logger, level: LogLevel, message: str, *args) -> None:
+    if logger is not None:
+        log_method_name = _log_level_map.get(level)
+        if log_method_name is None:
+            raise BadEnumTallyException(level, LogLevel)
+        log_method = getattr(logger, log_method_name)
+
+        log_method(message.format(*args))
+    else:
+        print("NONE")
 
 
 class TallyLog():
     _sessions: Dict[_TallySessionId, TallySession] = {}
     _name_set: Dict[str, _TallySessionId] = {}
     _settings: TallyLogSettings
-    _logger = None  # TODO: ADD TYPE ANNOTATION
+    _logger: Logger
 
-    def __init__(self, settings=TallyLogSettings(), logger=None):
-        self.settings = settings
-        self.logger = logger
-        if logger is not None:
-            pass  # TODO: ADD INITIALIZED MESSAGE DEPENDING ON SETTINGS
+    def __init__(self, settings: TallyLogSettings = TallyLogSettings(), logger: Logger = DefaultConsoleLogger()):
+        self._settings = settings
+        self._logger = logger
+        if self._settings.log_on_init:
+            _log_message(self._logger, self._settings.default_log_level,
+                         "Initialized TallyLog object named {}", self._settings.name)
 
     def set_settings(self, settings: TallyLogSettings) -> None:
-        self.settings = settings
+        self._settings = settings
 
-    def set_logger(self, logger) -> None:  # TODO: ADD TYPE ANNOTATION
-        self.logger = logger
+    def set_logger(self, logger: Logger) -> None:
+        self._logger = logger
 
     def __repr__(self):
         return ["{}".format(self._sessions[id]) for id in self._sessions]
@@ -88,7 +102,7 @@ class TallyLog():
 
         id = _TallySessionId(name)
         access_token_expires = timedelta(
-            seconds=self.settings.default_expire_time)
+            seconds=self._settings.default_expire_time)
         expire_time = datetime.utcnow() + access_token_expires
         new_session = TallySession(id, expire_time, start_message)
 
@@ -180,11 +194,9 @@ class TallyLog():
 
     def display(self, id: _TallySessionId) -> None:
         self._tidy()
-        # TODO: HANDLE BETTER DISPLAY
-        if self.settings is not None and self.logger is not None:
-            # TODO: HANDLE ALL CONFIGURATION
-            if self.settings.TRACKER == "on":
-                self.logger.log_tracker(self._sessions.get(id))
+        session = self.get_session(id)
+        _log_message(
+            self._logger, self._settings.default_log_level, str(session))
 
     def display_and_delete(self, id: _TallySessionId, description: str = "Deleted") -> TallySession:
         self.update(id, description)

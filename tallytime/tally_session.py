@@ -52,12 +52,12 @@ class TallySession():
         self.statuses.append(_TallyStatus(description, datetime.utcnow()))
 
     def __repr__(self):
-        ret = "TallySession '{}':\t\t(Expires at: {})".format(self.id.name,
-                                                              self.expire_time)
+        ret = "TallySession '{}':\t(Expires at: {})".format(self.id.name,
+                                                            self.expire_time)
         for k in range(len(self.statuses)):
             s = self.statuses[k]
             diff = 0 if k == 0 else s.time - self.statuses[k - 1].time
-            ret += "\n\t\t{} \tdiff: {} {} ".format(
+            ret += "\n\t{} \tdiff: {} {} ".format(
                 s.description, diff, s.time)
 
         return ret
